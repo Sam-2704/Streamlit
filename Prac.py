@@ -15,11 +15,21 @@ choice = st.sidebar.selectbox("Select an option", menu)
 if choice == "Home":
     st.write("Welcome to the Life Tracking App! Choose an option from the sidebar to get started.")
 elif choice == "Sleep Tracker":
-    # Define sleep tracking form here
-    pass
+      st.subheader("Sleep Tracking")
+    hours = st.number_input("Enter the number of hours of sleep", min_value=0, step=1)
+    time = get_time()
+    if st.button("Add sleep"):
+        st.write("f{time} - {hours} hours of sleep")
+        
 elif choice == "Exercise Tracker":
-    # Define exercise tracking form here
-    pass
+    st.subheader("Exercise Tracker")
+    exercise = st.text_input("Enter your exercise")
+    weight = st.number_input("Enter your weight (lbs)", min_value=0, step=1)
+    sets = st.number_input("Enter number of sets", min_value=0, step=1)
+    reps = st.number_input("Enter number of reps", min_value=0, step=1)
+    time = get_time()
+    if st.button("Add workout"):
+        st.write(f"{time} - {exercise}: {sets} sets of {reps} reps at {weight} lbs")
 elif choice == "Water Tracker":
     # Define water tracking form here
     pass
