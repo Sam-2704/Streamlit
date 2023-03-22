@@ -47,3 +47,4 @@ elif choice == "Sleep":
     time = get_time()
     if st.button("Add sleep"):
         st.write(f"{time} - {hours} hours of sleep")
+        
