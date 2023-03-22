@@ -1,26 +1,37 @@
 import streamlit as st
+pip install google.oauth2.credentials
+pip install google_auth_oauthlib.flow 
+pip install googleapiclient.discovery
 from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 
 # Set up Streamlit app
-st.title('Daily Email Activity Tracker')
-email = st.text_input('Enter your email ID:')
-start_date = st.date_input('Select start date:')
-end_date = st.date_input('Select end date:')
+st.title('Gmail UI Integration')
+st.write('Please authenticate your Gmail account to proceed.')
+
+# Set up authentication
+SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+CLIENT_SECRETS_FILE = 'client_secrets.json'
+flow = Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+auth_url, _ = flow.authorization_url(access_type='offline')
+auth_code = st.text_input('Enter the authorization code:')
+if auth_code:
+    flow.fetch_token(authorization_response=auth_code)
 
 # Connect to Gmail API and fetch data
-SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
-creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+creds = Credentials.from_authorized_user_info(info=flow.credentials.to_json())
 service = build('gmail', 'v1', credentials=creds)
 
-def fetch_emails(start_date, end_date):
-    query = f'after:{start_date} before:{end_date}'
-    result = service.users().messages().list(userId='me', q=query).execute()
-    return result['messages']
+# Example: Fetch all emails from inbox
+results = service.users().messages().list(userId='me', q='in:inbox').execute()
+messages = results.get('messages', [])
 
 # Display data using Streamlit
-if email:
-    st.write(f'Daily email activity for {email}:')
-    st.write(f'Number of emails received: {len(fetch_emails(start_date, end_date))}')
-    # Add more visualizations as needed
+if messages:
+    st.write('Your inbox contains the following messages:')
+    for message in messages:
+        message_data = service.users().messages().get(userId='me', id=message['id']).execute()
+        st.write(message_data['snippet'])
+else:
+    st.write('Your inbox is empty.')
