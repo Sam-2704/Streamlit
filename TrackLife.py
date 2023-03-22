@@ -43,7 +43,7 @@ elif choice == "Nutrition":
 # Define the sleep page content
 elif choice == "Sleep":
     st.subheader("Sleep Tracking")
-    hours = st.number_input("Enter the number of hours of sleep", min_value=0, step=0.25)
+    hours = st.number_input("Enter the number of hours of sleep", min_value=0, step=1)
     time = get_time()
     if st.button("Add sleep"):
         st.write("f{time} - {hours} hours of sleep")
